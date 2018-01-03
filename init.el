@@ -32,7 +32,10 @@
     ("bffa9739ce0752a37d9b1eee78fc00ba159748f50dc328af4be661484848e476" default)))
  '(package-selected-packages
    (quote
-    (ox-html5slide centered-window-mode htmlize ox-twbs diminish key-chord erc-hl-nicks treemacs symon rainbow-mode switch-window dashboard smex company sudo-edit emms magit org-bullets hungry-delete beacon linum-relative spaceline fancy-battery spacemacs-theme exwm which-key use-package))))
+    (screenshot ox-html5slide centered-window-mode htmlize ox-twbs diminish key-chord erc-hl-nicks treemacs symon rainbow-mode switch-window dashboard smex company sudo-edit emms magit org-bullets hungry-delete beacon linum-relative spaceline fancy-battery spacemacs-theme exwm which-key use-package)))
+ '(screenshot-schemes
+   (quote
+    (("local" :dir "~/"))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
