@@ -559,14 +559,15 @@ let's make a quick fix and bind it properly.
 ** Copy a line
 Regardless of where your cursor is, this quickly copies a line.
 #+BEGIN_SRC emacs-lisp
-  (defun copy-whole-line ()
-    "Copies a line without regard for cursor position."
-    (interactive)
-    (save-excursion
-      (beginning-of-line)
-      (kill-line)
-      (yank)))
-  (global-set-key (kbd "C-c C-l") 'copy-whole-line)
+    (defun copy-whole-line ()
+      "Copies a line without regard for cursor position."
+      (interactive)
+      (save-excursion
+	(kill-new
+	 (buffer-substring
+	  (point-at-bol)
+	  (point-at-eol)))))
+    (global-set-key (kbd "C-c C-l") 'copy-whole-line)
 #+END_SRC
 * Minor conveniences
 Emacs is at it's best when it just does things for you, shows you the way so to speak.
