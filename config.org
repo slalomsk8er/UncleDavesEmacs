@@ -506,7 +506,10 @@ Plus it makes sure that looking for files with =C-x C-f= is less of a pain due t
 *** ido-vertical-mode
 I don't want to use the arrow keys, so I don't
 #+BEGIN_SRC emacs-lisp
-  (ido-vertical-mode 1)
+  (use-package ido-vertical-mode
+    :ensure t
+    :init
+      (ido-vertical-mode 1))
   (setq ido-vertical-define-keys 'C-n-and-C-p-only)
 #+END_SRC
 *** smex, also known as "ido for M-x"
