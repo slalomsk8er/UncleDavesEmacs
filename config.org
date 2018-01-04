@@ -31,32 +31,27 @@ For instructions on how to do it, refer to =~/.emacs.d/init.el=.
 Since we are going to use emacs as our window manager, it would be nice to have some external software to make our life easier.
 *** From the package manager:
 - =xorg-server=, for obvious reasons.
-- A browser (sadly, the built in xwidgets-webkit thingie is unreliable)
+- A browser (sadly, the built in xwidgets-webkit thingie is unreliable).
 - =pulsemixer=, available from =https://github.com/GeorgeFilipkin/pulsemixer=.
-- A composite manager (highly recommended, I personally use =compton=)
-- =imagemagick= if you are going to be using emacs to take screenshots
-- =ibus-daemon= if you need multiple keyboard input options (emacs handles them well on its own but ibus is nice)
-- =terminus-font= for it to work out of the box, if you don't want terminus you need to edit your =init.el=
+- A composite manager (highly recommended, I personally use =compton=).
+- =imagemagick= if you are going to be using emacs to take screenshots.
+- =ibus-daemon= if you need multiple keyboard input options (emacs handles them well on its own but ibus is nice).
+- =terminus-font= for it to work out of the box, if you don't want terminus you need to edit your =init.el=.
 **** Optional
 - =noto-cjk=, for all the fonts imaginable.
 ** TRAMP
 *** From the package manager:
-- =sudo=, properly configured for your user
-** Python
-One liner to install all the dependencies for Elpy
-#+BEGIN_SRC shell
-pip install jedi flake8 autopep8
-#+END_SRC
+- =sudo=, properly configured for your user.
 ** EMMS
 *** From the package manager:
 - =mplayer= since we are going to be using EMMS for music and video playback, MPlayer is necessary and the recommended backend.
-- =mpv= if you prefer it over mplayer for video playback
+- =mpv= if you prefer it over mplayer for video playback.
 *** From emms:
-If you'd like for EMMS to correctly display file metadata, here's a few steps to do it
+If you'd like for EMMS to correctly display file metadata, here's a few steps to do it.
 
-- Install =taglib= via your distributions package manager
+- Install =taglib= via your distributions package manager.
 
-- Download and compile the necessary executable
+- Download and compile the necessary executable.
 #+BEGIN_SRC bash
 git clone git://git.sv.gnu.org/emms.git
 cd emms
