@@ -787,6 +787,7 @@ Edit this list as you see fit!
     (diminish 'which-key-mode)
     (diminish 'linum-relative-mode)
     (diminish 'hungry-delete-mode)
+    (diminish 'subword-mode)
     (diminish 'beacon-mode)
     (diminish 'centered-window-mode)
     (diminish 'page-break-lines-mode)
