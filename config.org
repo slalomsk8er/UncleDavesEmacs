@@ -868,14 +868,23 @@ Obviously you might have to adjust /server-name/ and /server-port/ to fit your c
       ("<XF86AudioStop>" . emms-stop))
 #+END_SRC
 *** Some more fun stuff
+**** Starting the daemon from within emacs
 If you have an absolutely massive music library, it might be a good idea to get rid of =emms-cache-set-from-mpd-all=
 and only invoke it manually when needed.
 #+BEGIN_SRC emacs-lisp
-  (defun start-music-player ()
+  (defun start-music-daemon ()
     "Start MPD, connects to it and syncs the metadata cache."
     (interactive)
     (shell-command "mpd")
     (emms-player-mpd-connect)
     (emms-cache-set-from-mpd-all))
-  (global-set-key (kbd "s-m c") 'start-music-player)
+  (global-set-key (kbd "s-m c") 'start-music-daemon)
+#+END_SRC
+**** Killing the daemon from within emacs
+#+BEGIN_SRC emacs-lisp
+  (defun kill-music-daemon ()
+    (interactive)
+    (emms-stop)
+    (start-process "kill-mpd" nil "killall" "mpd"))
+  (global-set-key (kbd "s-m k") 'kill-music-daemon)
 #+END_SRC
