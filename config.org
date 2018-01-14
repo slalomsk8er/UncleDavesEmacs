@@ -1024,7 +1024,6 @@ Obviously you might have to adjust /server-name/ and /server-port/ to fit your c
     :bind
       ("s-m p" . emms)
       ("s-m b" . emms-smart-browse)
-      ("s-m u" . mpc-update)
       ("s-m r" . emms-player-mpd-update-all-reset-cache)
       ("<XF86AudioPrev>" . emms-previous)
       ("<XF86AudioNext>" . emms-next)
@@ -1037,6 +1036,15 @@ We use a non-default port, to use the built in =mpc= functionality we need to se
 #+BEGIN_SRC emacs-lisp
   (setq mpc-host "localhost:6601")
 #+END_SRC
+**** Updating the database easily.
+#+BEGIN_SRC emacs-lisp
+  (defun mpd/update-database ()
+    "Updates the MPD database synchronously."
+    (interactive)
+    (call-process "mpc" nil nil nil "update")
+    (message "MPD Database Updated!"))
+  (global-set-key (kbd "s-m u") 'mpd/update-database)
+#+END_SRC
 *** Some more fun stuff
 
 **** Starting the daemon from within emacs
@@ -1048,7 +1056,6 @@ and only invoke it manually when needed.
     (interactive)
     (shell-command "mpd")
     (emms-player-mpd-connect)
-    (mpc-update)
     (emms-cache-set-from-mpd-all))
   (global-set-key (kbd "s-m c") 'start-music-daemon)
 #+END_SRC
