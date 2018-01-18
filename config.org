@@ -1,6 +1,8 @@
 #+STARTUP: overview
 #+TITLE: Uncle Dave's Emacs
 #+CREATOR: Dawid 'daedreth' Eckert
+#+LANGUAGE: en
+#+OPTIONS: num:nil
 * Installation
 ** Quick Installation
 =git clone https://github.com/daedreth/UncleDavesEmacs ~/.emacs.d=
@@ -168,6 +170,7 @@ By default, these don't work, this makes sure they do, adding them to exwm-input
 	       XF86ScreenSaver
 	       XF68Back
 	       XF86Forward
+               Scroll_Lock
 	       print))
     (cl-pushnew k exwm-input-prefix-keys))
 #+END_SRC
@@ -802,6 +805,7 @@ change =zzz-up-to-char= into =zzz-to-char=.
     :ensure t
     :bind ("M-z" . zzz-up-to-char))
 #+END_SRC
+
 * Kill ring
 There is a lot of customization to the kill ring, and while I have not used it much before,
 I decided that it was time to change that.
@@ -819,6 +823,7 @@ C-n and C-p totally work for this.
     :ensure t
     :bind ("M-y" . popup-kill-ring))
 #+END_SRC
+
 * Completion
 Be it for code or prose, completion is a must.
 
