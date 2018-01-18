@@ -132,6 +132,12 @@ Everything regarding the WM or DE-like functionality is bundled here, remove the
       (exwm-config-default))
 #+END_SRC
 
+*** Default workspace number
+I need one, and only one single workspace by default, since =exwm= is good enough to create those dynamically anyway, it doesn't matter much.
+#+BEGIN_SRC emacs-lisp
+  (setq exwm-workspace-number 1)
+#+END_SRC
+
 *** Keybindings
 If you are wondering why I am not utilizing use-package for the bindings,
 allow me to tell you about slight bugs that occur only when dealing with exwm bindings.
@@ -664,23 +670,43 @@ let's make a quick fix and bind it properly.
   (defun daedreth/kill-inner-word ()
     "Kills the entire word your cursor is in. Equivalent to 'ciw' in vim."
     (interactive)
+    (forward-char 1)
     (backward-word)
     (kill-word 1))
-  (global-set-key (kbd "C-c C-w") 'daedreth/kill-inner-word)
+  (global-set-key (kbd "C-c w k") 'daedreth/kill-inner-word)
+#+END_SRC
+
+** Improved copy-word
+And again, the same as above but we make sure to not delete the source word.
+#+BEGIN_SRC emacs-lisp
+  (defun daedreth/copy-whole-word ()
+    (interactive)
+    (save-excursion
+      (forward-char 1)
+      (backward-word)
+      (kill-word 1)
+      (yank)))
+  (global-set-key (kbd "C-c w c") 'daedreth/copy-whole-word)
 #+END_SRC
 
 ** Copy a line
 Regardless of where your cursor is, this quickly copies a line.
 #+BEGIN_SRC emacs-lisp
-    (defun daedreth/copy-whole-line ()
-      "Copies a line without regard for cursor position."
-      (interactive)
-      (save-excursion
-	(kill-new
-	 (buffer-substring
-	  (point-at-bol)
-	  (point-at-eol)))))
-    (global-set-key (kbd "C-c C-l") 'daedreth/copy-whole-line)
+  (defun daedreth/copy-whole-line ()
+    "Copies a line without regard for cursor position."
+    (interactive)
+    (save-excursion
+      (kill-new
+       (buffer-substring
+        (point-at-bol)
+        (point-at-eol)))))
+  (global-set-key (kbd "C-c l c") 'daedreth/copy-whole-line)
+#+END_SRC
+
+** Kill a line
+And this quickly deletes a line.
+#+BEGIN_SRC emacs-lisp
+  (global-set-key (kbd "C-c l k") 'kill-whole-line)
 #+END_SRC
 
 * Minor conveniences
@@ -921,7 +947,6 @@ Those are all rather self-explanatory.
 ** Keybindings
 #+BEGIN_SRC emacs-lisp
   (global-set-key (kbd "C-c '") 'org-edit-src-code)
-  (define-key global-map "\C-cl" 'org-store-link)
 #+END_SRC
 
 ** Org Bullets
