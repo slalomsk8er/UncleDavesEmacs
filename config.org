@@ -855,13 +855,26 @@ I prefer =C-n= and =C-p= to move around the items, so I remap those accordingly.
 #+END_SRC
 
 *** Backends
+**** Python
 #+BEGIN_SRC emacs-lisp
   (use-package company-jedi
     :ensure t
     :init
       (add-to-list 'company-backends 'company-jedi))
 #+END_SRC
+**** lisp
+#+BEGIN_SRC emacs-lisp
+  (use-package slime
+    :ensure t
+    :config
+    (setq inferior-lisp-program "/usr/bin/sbcl")
+    (setq slime-contribs '(slime-fancy)))
 
+  (use-package slime-company
+    :ensure t
+    :init
+    (slime-setup '(slime-fancy slime-company)))
+#+END_SRC
 ** electric
 If you write any code, you may enjoy this.
 Typing the first character in a set of 2, completes the second one after your cursor.
