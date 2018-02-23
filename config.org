@@ -204,7 +204,7 @@ to suit the software that you are using. What good is a launcher for discord if 
 
   (defun daedreth/launch-browser ()
     (interactive)
-    (exwm-async-run "qutebrowser"))
+    (exwm-async-run "firefox"))
 
   (defun daedreth/lock-screen ()
     (interactive)
