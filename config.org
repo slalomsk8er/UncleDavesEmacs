@@ -1,6 +1,6 @@
 #+STARTUP: overview
-#+TITLE: Uncle Dave's Emacs
-#+CREATOR: Dawid 'daedreth' Eckert
+#+TITLE: DGR's Emacs
+#+CREATOR: Dominik 'DGR' Riva
 #+LANGUAGE: en
 #+OPTIONS: num:nil
 * Installation
@@ -204,7 +204,7 @@ to suit the software that you are using. What good is a launcher for discord if 
 
   (defun daedreth/launch-browser ()
     (interactive)
-    (exwm-async-run "qutebrowser"))
+    (exwm-async-run "firefox"))
 
   (defun daedreth/lock-screen ()
     (interactive)
@@ -214,6 +214,9 @@ to suit the software that you are using. What good is a launcher for discord if 
     (interactive)
     (start-process "halt" nil "sudo" "halt"))
 #+END_SRC
+
+#+RESULTS:
+: daedreth/shutdown
 
 *** Keybindings to start processes
 These can be modified as well, suit yourself.
@@ -246,7 +249,7 @@ It goes without saying that you are free to modify the modifier as you see fit, 
 *** Keybindings to start processes
 You can also change those if you'd like, but I highly recommend keeping 'em the same, chances are, they will just work.
 #+BEGIN_SRC emacs-lisp
-(global-set-key (kbd "<XF86AudioMute>") 'audio/mute)
+(global-set-key (kbd "<XF86Launch1>") 'audio/mute)
 (global-set-key (kbd "<XF86AudioRaiseVolume>") 'audio/raise-volume)
 (global-set-key (kbd "<XF86AudioLowerVolume>") 'audio/lower-volume)
 #+END_SRC
@@ -291,8 +294,12 @@ If you happen to use the console terminal version of emacs, get rid of =when win
 I use qutebrowser, so that's what I'll set up.
 #+BEGIN_SRC emacs-lisp
   (setq browse-url-browser-function 'browse-url-generic
-        browse-url-generic-program "qutebrowser")
+        browse-url-generic-program "firefox")
 #+END_SRC
+
+#+RESULTS:
+: firefox
+
 * Projectile
 Projectile is an awesome project manager, mostly because it recognizes directories
 with a =.git= directory as projects and helps you manage them accordingly.
@@ -318,7 +325,7 @@ change the numbers to suit your liking, I find 5 to be enough.
     (dashboard-setup-startup-hook)
     (setq dashboard-items '((recents  . 5)
                             (projects . 5)))
-    (setq dashboard-banner-logo-title "Welcome to Uncle Daves Emacs!"))
+    (setq dashboard-banner-logo-title "Welcome to Dominik's Emacs!"))
 #+END_SRC
 
 * Modeline
@@ -364,7 +371,7 @@ If you prefer the 12hr-format, change the variable to =nil= instead of =t=.
 *** Time format
 #+BEGIN_SRC emacs-lisp
   (setq display-time-24hr-format t)
-  (setq display-time-format "%H:%M - %d %B %Y")
+  (setq display-time-format "%H:%M - %d.%m.%Y")
 #+END_SRC
 
 *** Enabling the mode
@@ -1106,6 +1113,7 @@ Obviously you might have to adjust /server-name/ and /server-port/ to fit your c
       (setq emms-seek-seconds 5)
       (setq emms-player-list '(emms-player-mpd))
       (setq emms-info-functions '(emms-info-mpd))
+      (setq emms-player-mpd-music-directory "/home/driva/Music")
       (setq emms-player-mpd-server-name "localhost")
       (setq emms-player-mpd-server-port "6601")
     :bind
@@ -1152,6 +1160,7 @@ and only invoke it manually when needed.
     (message "MPD Killed!"))
   (global-set-key (kbd "s-m k") 'mpd/kill-music-daemon)
 #+END_SRC
+
 **** Updating the database easily.
 #+BEGIN_SRC emacs-lisp
   (defun mpd/update-database ()
@@ -1161,3 +1170,21 @@ and only invoke it manually when needed.
     (message "MPD Database Updated!"))
   (global-set-key (kbd "s-m u") 'mpd/update-database)
 #+END_SRC
+
+**** If stuck in folder
+     Reset the emms cache to the top of the mpd library 
+
+#+BEGIN_SRC emacs-lisp
+     (global-set-key (kbd "s-m t") 'emms-cache-set-from-mpd-all)
+#+END_SRC
+
+**** Cover Art
+     EMMS uses cover_small.jpg (100px * 100px) and cover_med.jpg (200px * 200px) as cover art.
+     To make the overall appearance more consistent we set placeholders for albums that miss cover art.
+
+#+BEGIN_SRC emacs-lisp
+  (setq emms-browser-default-covers
+    (list (expand-file-name "images/cover_small.jpg" (file-name-directory load-file-name)) (expand-file-name "images/cover_med.jpg" (file-name-directory load-file-name)) nil))
+#+END_SRC
+
+
