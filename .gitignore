@@ -9,6 +9,8 @@
 dmenu-items
 snippets
 config.el
+custom.el
+lisp/ligature.el
 recentf
 smex-items
 tramp

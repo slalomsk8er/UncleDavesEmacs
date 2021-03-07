@@ -1,6 +1,6 @@
 #+STARTUP: overview
-#+TITLE: Uncle Dom's Emacs
-#+CREATOR: Dawid 'daedreth' Eckert
+#+TITLE: Dominik's Emacs
+#+CREATOR: Dominik 'dgr' Riva
 #+LANGUAGE: en
 #+OPTIONS: num:nil
 * Installation
@@ -34,6 +34,8 @@ Since we are going to use emacs as our window manager, it would be nice to have 
 - =imagemagick=, if you are going to be using emacs to take screenshots.
 - =ibus-daemon=, if you need multiple keyboard input options (emacs handles them well on its own but ibus is nice).
 - =terminus-font=, for it to work out of the box, if you don't want terminus you need to edit your =init.el=.
+- =fonts-firacode= ,font with ligatures for coders
+- =texlive= and =texlive-fonts-extra=, working in TeXlive for PDF exports with Org
 
 **** Optional
 - A browser (sadly, the built in xwidgets-webkit thingie is unreliable).
@@ -79,8 +81,42 @@ and love are going to work flawlessly. For all the others, just keep on reading.
 
 * Basic Interface Settings
 These are setting that do not depend on packages and are built-in enhancements to the UI.
-
 ** Looks
+*** Theme
+I like the solarized dark theme and the one from Doom Emacs works better in diverse modes
+#+BEGIN_SRC emacs-lisp
+  (use-package doom-themes
+    :ensure t
+    :init (load-theme 'doom-solarized-dark t))
+#+END_SRC
+*** Font
+To aktivate ligatures copy https://raw.githubusercontent.com/mickeynp/ligature.el/master/ligature.el to a path included path for use-package to find or specify it below.
+#+BEGIN_SRC emacs-lisp
+  (set-face-attribute 'default nil :font "Fira Code")
+  (add-to-list 'load-path "~/.emacs.d/lisp/")
+  (use-package ligature
+    :load-path "path-to-ligature-repo"
+    :config
+    ;; Enable the "www" ligature in every possible major mode
+    (ligature-set-ligatures 't '("www"))
+    ;; Enable traditional ligature support in eww-mode, if the
+    ;; `variable-pitch' face supports it
+    (ligature-set-ligatures 'eww-mode '("ff" "fi" "ffi"))
+    ;; Enable all Cascadia Code ligatures in programming modes
+    (ligature-set-ligatures '(prog-mode org-mode) '("**" "***" "**/" "*>" "*/" "\\\\" "\\\\\\" "{-" "::"
+				       ":::" ":=" "!!" "!=" "!==" "-}" "----" "-->" "->" "->>"
+				       "-<" "-<<" "-~" "#{" "#[" "##" "###" "####" "#(" "#?" "#_"
+				       "#_(" ".-" ".=" ".." "..<" "..." "?=" "??" ";;" "/*" "/**"
+				       "/=" "/==" "/>" "//" "///" "&&" "||" "||=" "|=" "|>" "^=" "$>"
+				       "++" "+++" "+>" "=:=" "==" "===" "==>" "=>" "=>>" "<="
+				       "=<<" "=/=" ">-" ">=" ">=>" ">>" ">>-" ">>=" ">>>" "<*"
+				       "<*>" "<|" "<|>" "<$" "<$>" "<!--" "<-" "<--" "<->" "<+"
+				       "<+>" "<=" "<==" "<=>" "<=<" "<>" "<<" "<<-" "<<=" "<<<"
+				       "<~" "<~~" "</" "</>" "~@" "~-" "~>" "~~" "~~>" "%%"))
+    ;; Enables ligature checks globally in all buffers. You can also do it
+    ;; per mode with `ligature-mode'.
+    (global-ligature-mode t))
+#+END_SRC
 *** Remove lame startup screen
 We use an actual replacement for it, keep reading or head directly to =dashboard=.
 #+BEGIN_SRC emacs-lisp
@@ -93,10 +129,10 @@ If you like using any of those, change =-1= to =1=.
 (menu-bar-mode -1)
 (scroll-bar-mode -1)
 #+END_SRC
-*** Disable bell
-This is annoying, remove this line if you like being visually reminded of events.
+*** Switch bell from audible to visual
+I't less annoying but still gives feedback.
 #+BEGIN_SRC emacs-lisp
-(setq ring-bell-function 'ignore)
+  (setq visible-bell t)
 #+END_SRC
 *** Set UTF-8 encoding
 #+BEGIN_SRC emacs-lisp 
@@ -121,8 +157,8 @@ Changes =lambda= to an actual symbol and a few others as well, only in the GUI v
 *** Disable backups and auto-saves
 I don't use either, you might want to turn those from =nil= to =t= if you do.
 #+BEGIN_SRC emacs-lisp
-(setq make-backup-files nil)
-(setq auto-save-default nil)
+(setq make-backup-files t)
+(setq auto-save-default t)
 #+END_SRC
 *** Change yes-or-no questions into y-or-n questions
 #+BEGIN_SRC emacs-lisp
@@ -181,7 +217,7 @@ I figured the best way to launch my most used applications would be direct emacs
 keybindings.
 
 *** dmenu for emacs
-Who would've thought this was available, together with ido-vertical it's a nice large menu
+Who would've thought this was available, together with +ido-vertical+ it's a nice large menu
 with its own cache for most launched applications.
 #+BEGIN_SRC emacs-lisp
   (use-package dmenu
@@ -198,19 +234,19 @@ to suit the software that you are using. What good is a launcher for discord if 
     (interactive)
     (start-process name nil name))
 
-  (defun daedreth/launch-discord ()
+  (defun dgr/launch-discord ()
     (interactive)
     (exwm-async-run "discord"))
 
-  (defun daedreth/launch-browser ()
+  (defun dgr/launch-browser ()
     (interactive)
     (exwm-async-run "firefox"))
 
-  (defun daedreth/lock-screen ()
+  (defun dgr/lock-screen ()
     (interactive)
     (exwm-async-run "slock"))
 
-  (defun daedreth/shutdown ()
+  (defun dgr/shutdown ()
     (interactive)
     (start-process "halt" nil "sudo" "halt"))
 #+END_SRC
@@ -218,10 +254,10 @@ to suit the software that you are using. What good is a launcher for discord if 
 *** Keybindings to start processes
 These can be modified as well, suit yourself.
 #+BEGIN_SRC emacs-lisp
-  (global-set-key (kbd "s-d") 'daedreth/launch-discord)
-  (global-set-key (kbd "<s-tab>") 'daedreth/launch-browser)
-  (global-set-key (kbd "<XF86ScreenSaver>") 'daedreth/lock-screen)
-  (global-set-key (kbd "<XF86PowerOff>") 'daedreth/shutdown)
+  (global-set-key (kbd "s-d") 'dgr/launch-discord)
+  (global-set-key (kbd "<s-tab>") 'dgr/launch-browser)
+  (global-set-key (kbd "<XF86ScreenSaver>") 'dgr/lock-screen)
+  (global-set-key (kbd "<XF86PowerOff>") 'dgr/shutdown)
 #+END_SRC
 
 ** Audio controls
@@ -258,11 +294,11 @@ If you happen to use the console terminal version of emacs, get rid of =when win
 
 *** Screenshotting the entire screen
 #+BEGIN_SRC emacs-lisp
-  (defun daedreth/take-screenshot ()
+  (defun dgr/take-screenshot ()
     "Takes a fullscreen screenshot of the current workspace"
     (interactive)
     (when window-system
-    (loop for i downfrom 3 to 1 do
+    (cl-loop for i downfrom 3 to 1 do
           (progn
             (message (concat (number-to-string i) "..."))
             (sit-for 1)))
@@ -271,12 +307,12 @@ If you happen to use the console terminal version of emacs, get rid of =when win
     (start-process "screenshot" nil "import" "-window" "root" 
                (concat (getenv "HOME") "/" (subseq (number-to-string (float-time)) 0 10) ".png"))
     (message "Screenshot taken!")))
-  (global-set-key (kbd "<print>") 'daedreth/take-screenshot)
+  (global-set-key (kbd "<print>") 'dgr/take-screenshot)
 #+END_SRC
 
 *** Screenshotting a region
 #+BEGIN_SRC emacs-lisp
-  (defun daedreth/take-screenshot-region ()
+  (defun dgr/take-screenshot-region ()
     "Takes a screenshot of a region selected by the user."
     (interactive)
     (when window-system
@@ -284,14 +320,14 @@ If you happen to use the console terminal version of emacs, get rid of =when win
     (call-process "convert" nil nil nil ".newScreen.png" "-shave" "1x1"
                   (concat (getenv "HOME") "/" (subseq (number-to-string (float-time)) 0 10) ".png"))
     (call-process "rm" nil nil nil ".newScreen.png")))
-  (global-set-key (kbd "<Scroll_Lock>") 'daedreth/take-screenshot-region)
+  (global-set-key (kbd "<Scroll_Lock>") 'dgr/take-screenshot-region)
 #+END_SRC
 
 ** Default browser
 I use qutebrowser, so that's what I'll set up.
 #+BEGIN_SRC emacs-lisp
   (setq browse-url-browser-function 'browse-url-generic
-        browse-url-generic-program "qutebrowser")
+        browse-url-generic-program "firefox")
 #+END_SRC
 * Projectile
 Projectile is an awesome project manager, mostly because it recognizes directories
@@ -318,7 +354,7 @@ change the numbers to suit your liking, I find 5 to be enough.
     (dashboard-setup-startup-hook)
     (setq dashboard-items '((recents  . 5)
                             (projects . 5)))
-    (setq dashboard-banner-logo-title "Welcome to Slalomsk8er's Emacs!"))
+    (setq dashboard-banner-logo-title "Welcome to Dominik's Emacs!"))
 #+END_SRC
 
 * Modeline
@@ -344,7 +380,7 @@ This enables spaceline, it looks better and works very well with my theme of cho
     :config
     (require 'spaceline-config)
       (setq spaceline-buffer-encoding-abbrev-p nil)
-      (setq spaceline-line-column-p nil)
+      (setq spaceline-line-column-p t)
       (setq spaceline-line-p nil)
       (setq powerline-default-separator (quote arrow))
       (spaceline-spacemacs-theme))
@@ -477,11 +513,33 @@ As a great emacs user once said:
 Do me the favor, do me the biggest favor, matter of fact do yourself the biggest favor and integrate those into your workflow.
 #+END_QUOTE
 
-** a prerequisite for others packages
+** Ivy - Completion
+a generic completion mechanism for Emacs
+
 #+BEGIN_SRC emacs-lisp
   (use-package ivy
     :ensure t)
 #+END_SRC
+*** Counsel - completion for common Emacs commands
+a collection of Ivy-enhanced versions of common Emacs commands
+
+ #+BEGIN_SRC emacs-lisp
+   (use-package counsel
+     :ensure t
+     :bind (("M-x" . counsel-M-x)
+	    ("C-x b" . counsel-ibuffer)
+	    ("C-x C-f" . counsel-find-file)
+	    :map minibuffer-local-map
+	    ("C-r" . 'counsel-minibuffer-history)))
+ #+End_SRC
+
+*** swiper - Search
+Ivy powered search
+ #+BEGIN_SRC emacs-lisp
+   (use-package swiper
+     :ensure t
+     :bind ("C-s" . 'swiper))
+ #+END_SRC
 ** scrolling and why does the screen move
 I don't know to be honest, but this little bit of code makes scrolling with emacs a lot nicer.
 #+BEGIN_SRC emacs-lisp
@@ -549,13 +607,6 @@ This annoyed me so much I wrote these two, they take care of it.
     (other-window 1))
   (global-set-key (kbd "C-x 3") 'split-and-follow-vertically)
 #+END_SRC
-** swiper and why is the default search so lame
-I like me some searching, the default search is very meh. In emacs, you mostly use search to get around your buffer, much like with avy, but sometimes it doesn't hurt to search for entire words or mode, swiper makes sure this is more efficient.
-#+BEGIN_SRC emacs-lisp
-  (use-package swiper
-    :ensure t
-    :bind ("C-s" . 'swiper))
-#+END_SRC
 ** buffers and why I hate list-buffers
 Another big thing is, buffers. If you use emacs, you use buffers, everyone loves them.
 Having many buffers is useful, but can be tedious to work with, let us see how we can improve it.
@@ -589,11 +640,6 @@ If you feel like you know how ibuffer works and need not to be asked for confirm
 (setq ibuffer-expert t)
 #+END_SRC
 
-*** Turn list-buffers into ido-switch-buffer
-Quick and easy to access, besides, it's =ido= so what's not to love.
-#+BEGIN_SRC emacs-lisp
-  (global-set-key (kbd "C-x C-b") 'ido-switch-buffer)
-#+END_SRC
 
 *** close-all-buffers
 It's one of those things where I genuinely have to wonder why there is no built in functionality for it.
@@ -622,49 +668,6 @@ something like =ansi-term= for instance.
       (setq linum-relative-current-symbol "")
       (add-hook 'prog-mode-hook 'linum-relative-mode))
 #+END_SRC
-
-** ido and why you should use it
-Once in a while you come across a package that is:
-
-- Unintrusive
-- Small
-- Preconfigured
-- Just werkz
-*** ido-mode
-I am glad to announce that ido is exactly this, it works well out of the box which is why I'm including it.
-Plus it makes sure that looking for files with =C-x C-f= is less of a pain due to auto-completion.
-+It's also superior to helm but shh, someone might hear us.+
-#+BEGIN_SRC emacs-lisp
-  (setq ido-enable-flex-matching nil)
-  (setq ido-create-new-buffer 'always)
-  (setq ido-everywhere t)
-  (ido-mode 1)
-#+END_SRC
-
-*** ido-vertical-mode
-One of the best packages on melpa, I don't want to use the arrow keys, so I don't and now
-I can even use =C-n= and =C-p= to select items.
-#+BEGIN_SRC emacs-lisp
-  (use-package ido-vertical-mode
-    :ensure t
-    :init
-      (ido-vertical-mode 1))
-  (setq ido-vertical-define-keys 'C-n-and-C-p-only)
-#+END_SRC
-
-*** smex, also known as "ido for M-x"
-Exactly what it says on the tin, it's identical to ido, with the difference that
-it's used for launching functions instead of looking for files.
-#+BEGIN_SRC emacs-lisp
-(use-package smex
-  :ensure t
-  :init
-    (smex-initialize)
-  :bind
-    ("M-x" . smex)
-    ("M-X" . smex-major-mode-commands))
-#+END_SRC
-
 ** avy and why it's the best thing in existence
 Many times have I pondered how I can move around buffers even quicker.
 I'm glad to say, that avy is precisely what I needed, and it's precisely what you need as well.
@@ -698,32 +701,32 @@ Why on earth does a function called =kill-word= not .. kill a word.
 It instead deletes characters from your cursors position to the end of the word,
 let's make a quick fix and bind it properly.
 #+BEGIN_SRC emacs-lisp
-  (defun daedreth/kill-inner-word ()
+  (defun dgr/kill-inner-word ()
     "Kills the entire word your cursor is in. Equivalent to 'ciw' in vim."
     (interactive)
     (forward-char 1)
     (backward-word)
     (kill-word 1))
-  (global-set-key (kbd "C-c w k") 'daedreth/kill-inner-word)
+  (global-set-key (kbd "C-c w k") 'dgr/kill-inner-word)
 #+END_SRC
 
 ** Improved copy-word
 And again, the same as above but we make sure to not delete the source word.
 #+BEGIN_SRC emacs-lisp
-  (defun daedreth/copy-whole-word ()
+  (defun dgr/copy-whole-word ()
     (interactive)
     (save-excursion
       (forward-char 1)
       (backward-word)
       (kill-word 1)
       (yank)))
-  (global-set-key (kbd "C-c w c") 'daedreth/copy-whole-word)
+  (global-set-key (kbd "C-c w c") 'dgr/copy-whole-word)
 #+END_SRC
 
 ** Copy a line
 Regardless of where your cursor is, this quickly copies a line.
 #+BEGIN_SRC emacs-lisp
-  (defun daedreth/copy-whole-line ()
+  (defun dgr/copy-whole-line ()
     "Copies a line without regard for cursor position."
     (interactive)
     (save-excursion
@@ -731,7 +734,7 @@ Regardless of where your cursor is, this quickly copies a line.
        (buffer-substring
         (point-at-bol)
         (point-at-eol)))))
-  (global-set-key (kbd "C-c l c") 'daedreth/copy-whole-line)
+  (global-set-key (kbd "C-c l c") 'dgr/copy-whole-line)
 #+END_SRC
 
 ** Kill a line
@@ -932,7 +935,52 @@ Minor, non-completion related settings and plugins for writing code.
     :init
     (slime-setup '(slime-fancy slime-company)))
 #+END_SRC
+** Ansible
+#+BEGIN_SRC emacs-lisp
+  (use-package yaml-mode
+    :ensure t
+    :mode "\\.yml")
 
+  (use-package ansible
+    :ensure t
+    :after yaml-mode
+    :mode "\\.yml.vault"
+
+    :custom
+    (ansible-vault-password-file "~/bin/ansible-vault-pwd")
+
+    :bind
+    (:map ansible-key-map
+	  ("C-c v" . rr/set-ansible-vault-mimipass-pwd)
+	  ("C-c C-d" . ansible-doc))
+
+    :config
+    (add-hook 'ansible-hook 'ansible-auto-decrypt-encrypt)
+    (defun rr/write-string (string file)
+      (with-temp-buffer
+	(insert string)
+	(write-region (point-min) (point-max) file)))
+
+    (defun rr/set-ansible-vault-mimipass-pwd ()
+      "Choose which mimipass password to be used for ansible vault."
+      (interactive)
+      (rr/write-string (format "#!/bin/bash\nmimipass get %s"
+			       (rr/helm-mimipass))
+		       ansible-vault-password-file)
+      (chmod ansible-vault-password-file
+	     (string-to-number "700" 8))))
+
+  (use-package company-ansible
+    :ensure t
+    :hook ansible-mode)
+
+  (use-package ansible-doc
+    :ensure t
+    :hook ansible
+    :bind
+    (:map ansible-doc-module-mode-map
+	  ("C-x C-s" . ignore)))
+#+END_SRC
 * Git integration
 Countless are the times where I opened ansi-term to use =git= on something.
 These times are also something that I'd prefer stay in the past, since =magit= is
@@ -1024,6 +1072,59 @@ Here is how we add more of them!
     :ensure t)
 #+END_SRC
 
+** Babel
+Languages need to be activated.
+#+BEGIN_SRC emacs-lisp
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((emacs-lisp . t)
+     (R . t)
+     (python . t)
+     (gnuplot . t)
+     (ledger . t)
+  ))
+#+END_SRC
+*** Ledger
+#+BEGIN_SRC emacs-lisp
+  (use-package ledger-mode
+    :mode ("\\.dat\\'"
+           "\\.ledger\\'")
+    :custom (ledger-clear-whole-transactions t))
+  (use-package flycheck-ledger :after ledger-mode)
+#+END_SRC
+
+*** gnuplot
+#+BEGIN_SRC emacs-lisp
+  (use-package gnuplot
+    :ensure t)
+#+END_SRC
+
+#+RESULTS:
+** Capture
+#+BEGIN_SRC emacs-lisp
+  (use-package org-capture
+    :ensure nil
+    :after org
+    :preface
+    (defvar my/org-ledger-card-template "%(org-read-date) %^{Payee}
+    Expenses:%^{Account}  €%^{Amount}
+    Liabilities:CreditsCards:Belfius" "Template for credit card transaction with ledger.")
+
+    (defvar my/org-ledger-cash-template "%(org-read-date) * %^{Payee}
+    Expenses:%^{Account}  CHF%^{Amount}
+    Assets:Cash:Wallet" "Template for cash transaction with ledger.")
+    :custom
+    (org-capture-templates
+     `(("l" "Ledger")
+       ("lb" "Bank" plain (file ,(format "~/Nextcloud/ledger/YNAB/ledger-%s.dat" (format-time-string "%Y"))),
+	my/org-ledger-card-template
+	:empty-lines 1
+	:immediate-finish t)
+       ("lc" "Cash" plain (file ,(format "~/Nextcloud/ledger/YNAB/ledger-%s.dat" (format-time-string "%Y"))),
+	my/org-ledger-cash-template
+	:empty-lines 1
+	:immediate-finish t))))
+#+END_SRC
 * Diminishing modes
 Your modeline is sacred, and if you have a lot of modes enabled, as you will if you use this config,
 you might end up with a lot of clutter there, the package =diminish= disables modes on the mode line but keeps
@@ -1062,7 +1163,7 @@ This also hides some of the channel messages to avoid cluttering the buffer.
 The other line changes the prompt for each channel buffer to match the channel name,
 this way you always know who you are typing to.
 #+BEGIN_SRC emacs-lisp
-  (setq erc-nick "daedreth")
+  (setq erc-nick "dgr")
   (setq erc-prompt (lambda () (concat "[" (buffer-name) "]")))
   (setq erc-hide-list '("JOIN" "PART" "QUIT"))
 #+END_SRC
@@ -1107,7 +1208,8 @@ Obviously you might have to adjust /server-name/ and /server-port/ to fit your c
       (setq emms-player-list '(emms-player-mpd))
       (setq emms-info-functions '(emms-info-mpd))
       (setq emms-player-mpd-server-name "localhost")
-      (setq emms-player-mpd-server-port "6601")
+      (setq emms-player-mpd-server-port "6600")
+      (setq emms-player-mpd-music-directory "~/Music")
     :bind
       ("s-m p" . emms)
       ("s-m b" . emms-smart-browse)
@@ -1123,7 +1225,7 @@ Obviously you might have to adjust /server-name/ and /server-port/ to fit your c
 We use non-default settings for the socket, to use the built in =mpc= functionality we need to set up a variable.
 Adjust according to your setup.
 #+BEGIN_SRC emacs-lisp
-  (setq mpc-host "localhost:6601")
+  (setq mpc-host "localhost:6600")
 #+END_SRC
 
 *** Some more fun stuff
@@ -1161,3 +1263,75 @@ and only invoke it manually when needed.
     (message "MPD Database Updated!"))
   (global-set-key (kbd "s-m u") 'mpd/update-database)
 #+END_SRC
+** Elfeed
+
+https://cestlaz.github.io/posts/using-emacs-29-elfeed/
+
+#+BEGIN_SRC emacs-lisp
+
+  (setq elfeed-db-directory "~/Nextcloud/elfeeddb")
+
+  (defun elfeed-mark-all-as-read ()
+    (interactive)
+    (mark-whole-buffer)
+    (elfeed-search-untag-all-unread))
+
+  ;;functions to support syncing .elfeed between machines
+  ;;makes sure elfeed reads index from disk before launching
+  (defun bjm/elfeed-load-db-and-open ()
+    "Wrapper to load the elfeed db from disk before opening"
+    (interactive)
+    (elfeed-db-load)
+    (elfeed)
+    (elfeed-search-update--force))
+
+  ;;write to disk when quiting
+  (defun bjm/elfeed-save-db-and-bury ()
+    "Wrapper to save the elfeed db to disk before burying buffer"
+    (interactive)
+    (elfeed-db-save)
+    (quit-window))
+
+  (use-package elfeed
+    :ensure t
+    :bind (:map elfeed-search-mode-map
+		("q" . bjm/elfeed-save-db-and-bury)
+		("Q" . bjm/elfeed-save-db-and-bury)
+		("m" . elfeed-toggle-star)
+		("M" . elfeed-toggle-star)))
+
+  ;;  (defalias 'elfeed-toggle-star
+  ;;    (elfeed-expose #'elfeed-search-toggle-all 'star))
+
+  (use-package elfeed-goodies
+    :ensure t
+    :config
+    (elfeed-goodies/setup))
+
+
+  (use-package elfeed-org
+    :ensure t
+    :config
+    (elfeed-org)
+    (setq rmh-elfeed-org-files (list "~/Nextcloud/elfeed.org")))
+
+  (defun elfeed-v-mpv (url)
+    "Watch a video from URL in MPV"
+    (async-shell-command (format "mpv %s" url)))
+
+  (defun elfeed-view-mpv (&optional use-generic-p)
+    "Youtube-feed link"
+    (interactive "P")
+    (let ((entries (elfeed-search-selected)))
+      (cl-loop for entry in entries
+	       do (elfeed-untag entry 'unread)
+	       when (elfeed-entry-link entry)
+	       do (elfeed-v-mpv it))
+      (mapc #'elfeed-search-update-entry entries)
+      (unless (use-region-p) (forward-line))))
+
+  (define-key elfeed-search-mode-map (kbd "v") 'elfeed-view-mpv)
+
+
+#+END_SRC
+
