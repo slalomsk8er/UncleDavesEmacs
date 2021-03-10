@@ -89,45 +89,87 @@ I like the solarized dark theme and the one from Doom Emacs works better in dive
     :ensure t
     :init (load-theme 'doom-solarized-dark t))
 #+END_SRC
-*** Font
+*** Fonts and Icons
 To aktivate ligatures copy https://raw.githubusercontent.com/mickeynp/ligature.el/master/ligature.el to a path included path for use-package to find or specify it below.
 #+BEGIN_SRC emacs-lisp
-  (set-face-attribute 'default nil :font "Fira Code")
-  (add-to-list 'load-path "~/.emacs.d/lisp/")
-  (use-package ligature
-    :load-path "path-to-ligature-repo"
-    :config
-    ;; Enable the "www" ligature in every possible major mode
-    (ligature-set-ligatures 't '("www"))
-    ;; Enable traditional ligature support in eww-mode, if the
-    ;; `variable-pitch' face supports it
-    (ligature-set-ligatures 'eww-mode '("ff" "fi" "ffi"))
-    ;; Enable all Cascadia Code ligatures in programming modes
-    (ligature-set-ligatures '(prog-mode org-mode) '("**" "***" "**/" "*>" "*/" "\\\\" "\\\\\\" "{-" "::"
-				       ":::" ":=" "!!" "!=" "!==" "-}" "----" "-->" "->" "->>"
-				       "-<" "-<<" "-~" "#{" "#[" "##" "###" "####" "#(" "#?" "#_"
-				       "#_(" ".-" ".=" ".." "..<" "..." "?=" "??" ";;" "/*" "/**"
-				       "/=" "/==" "/>" "//" "///" "&&" "||" "||=" "|=" "|>" "^=" "$>"
-				       "++" "+++" "+>" "=:=" "==" "===" "==>" "=>" "=>>" "<="
-				       "=<<" "=/=" ">-" ">=" ">=>" ">>" ">>-" ">>=" ">>>" "<*"
-				       "<*>" "<|" "<|>" "<$" "<$>" "<!--" "<-" "<--" "<->" "<+"
-				       "<+>" "<=" "<==" "<=>" "<=<" "<>" "<<" "<<-" "<<=" "<<<"
-				       "<~" "<~~" "</" "</>" "~@" "~-" "~>" "~~" "~~>" "%%"))
-    ;; Enables ligature checks globally in all buffers. You can also do it
-    ;; per mode with `ligature-mode'.
-    (global-ligature-mode t))
+  (use-package all-the-icons
+    :ensure t
+    ;;:init (all-the-icons-install-fonts)
+    )
+  ;; Set the font face based on platform
+  (pcase system-type
+    ((or 'windows-nt 'cygwin)
+     (set-face-attribute 'default nil
+			 :font "JetBrains Mono"
+			 :weight 'light
+			 ;;:height
+			 ))
+    ((or 'gnu/linux 'darwin)
+     (set-face-attribute 'default nil
+			 :font "Fira Code"
+			 :height 100
+			 )))
+
+    ;; Set the fixed pitch face
+    (set-face-attribute 'fixed-pitch nil
+			:font "Fira Code"
+			:weight 'light
+			:height 100
+			)
+
+    ;; Set the variable pitch face
+    (set-face-attribute 'variable-pitch nil
+			:font "Noto Sans"
+			:weight 'light
+			:height 100
+			)
+    ;;  (set-face-attribute 'default nil :font "Fira Code" )
+    (add-to-list 'load-path "~/.emacs.d/lisp/")
+    ;; The ligatures are tuned for Fira Code!
+    (use-package ligature
+      :load-path "path-to-ligature-repo"
+      :config
+      ;; Enable the "www" ligature in every possible major mode
+	  (ligature-set-ligatures 't '("www"))
+	  ;; Enable traditional ligature support in eww-mode, if the
+	  ;; `variable-pitch' face supports it
+	  (ligature-set-ligatures 'eww-mode '("ff" "fi" "ffi"))
+	  ;; Enable all Cascadia Code ligatures in programming modes
+	  (ligature-set-ligatures '(prog-mode org-mode) '("**" "***" "**/" "*>" "*/" "\\\\" "\\\\\\" "{-" "::"
+							  ":::" ":=" "!!" "!=" "!==" "-}" "----" "-->" "->" "->>"
+							  "-<" "-<<" "-~" "#{" "#[" "##" "###" "####" "#(" "#?" "#_"
+							  "#_(" ".-" ".=" ".." "..<" "..." "?=" "??" ";;" "/*" "/**"
+							  "/=" "/==" "/>" "//" "///" "&&" "||" "||=" "|=" "|>" "^=" "$>"
+							  "++" "+++" "+>" "=:=" "==" "===" "==>" "=>" "=>>" "<="
+							  "=<<" "=/=" ">-" ">=" ">=>" ">>" ">>-" ">>=" ">>>" "<*"
+							  "<*>" "<|" "<|>" "<$" "<$>" "<!--" "<-" "<--" "<->" "<+"
+							  "<+>" "<=" "<==" "<=>" "<=<" "<>" "<<" "<<-" "<<=" "<<<"
+							  "<~" "<~~" "</" "</>" "~@" "~-" "~>" "~~" "~~>" "%%"))
+	  ;; Enables ligature checks globally in all buffers. You can also do it
+	  ;; per mode with `ligature-mode'.
+	  (global-ligature-mode t))
+#+END_SRC
+*** Pretty symbols
+Changes =lambda= to an actual symbol and a few others as well, only in the GUI version though.
+#+BEGIN_SRC emacs-lisp
+  (when window-system (global-prettify-symbols-mode t))
+#+END_SRC
+*** TODO Fringe
+    Why isn't it working on reload? 
+#+BEGIN_SRC emacs-lisp
+  (set-fringe-mode 10)
 #+END_SRC
 *** Remove lame startup screen
 We use an actual replacement for it, keep reading or head directly to =dashboard=.
 #+BEGIN_SRC emacs-lisp
-(setq inhibit-startup-message t)
+  (setq inhibit-startup-message t)
 #+END_SRC
 *** Disable menus and scrollbars
 If you like using any of those, change =-1= to =1=.
 #+BEGIN_SRC emacs-lisp
-(tool-bar-mode -1)
-(menu-bar-mode -1)
-(scroll-bar-mode -1)
+  (tool-bar-mode -1)
+  (menu-bar-mode -1)
+  (scroll-bar-mode -1)
 #+END_SRC
 *** Switch bell from audible to visual
 I't less annoying but still gives feedback.
@@ -145,14 +187,8 @@ I't less annoying but still gives feedback.
 *** Highligh current line
 =hl-line= is awesome! It's not very awesome in the terminal version of emacs though, so we don't use that.
 #+BEGIN_SRC emacs-lisp
-(when window-system (global-hl-line-mode t))
+  (when window-system (global-hl-line-mode t))
 #+END_SRC
-*** Pretty symbols
-Changes =lambda= to an actual symbol and a few others as well, only in the GUI version though.
-#+BEGIN_SRC emacs-lisp
-(when window-system (global-prettify-symbols-mode t))
-#+END_SRC
-
 ** Functionality
 *** Disable backups and auto-saves
 I don't use either, you might want to turn those from =nil= to =t= if you do.
@@ -369,21 +405,29 @@ on the screen and better integration.
 
 
 One modeline-related setting that is missing and is instead placed at the bottom is =diminish=.
+** Doom Mode Line
+#+BEGIN_SRC emacs-lisp
+  (use-package doom-modeline
+    :ensure t
+    :init (doom-modeline-mode 1)
+    :custom ((doom-modeline-height 20)))
+#+END_SRC
+
 ** Spaceline!
 I may not use spacemacs, since I do not like evil-mode and find spacemacs incredibly bloated and slow,
 however it would be stupid not to acknowledge the best parts about it, the theme and their modified powerline setup.
 
 This enables spaceline, it looks better and works very well with my theme of choice.
 #+BEGIN_SRC emacs-lisp
-  (use-package spaceline
-    :ensure t
-    :config
-    (require 'spaceline-config)
-      (setq spaceline-buffer-encoding-abbrev-p nil)
-      (setq spaceline-line-column-p t)
-      (setq spaceline-line-p nil)
-      (setq powerline-default-separator (quote arrow))
-      (spaceline-spacemacs-theme))
+;  (use-package spaceline
+;    :ensure t
+;    :config
+;    (require 'spaceline-config)
+;      (setq spaceline-buffer-encoding-abbrev-p nil)
+;      (setq spaceline-line-column-p t)
+;      (setq spaceline-line-p nil)
+;      (setq powerline-default-separator (quote arrow))
+;      (spaceline-spacemacs-theme))
 #+END_SRC
 
 ** Cursor position
@@ -1014,18 +1058,82 @@ This very file has been written in org-mode, a lot of other configurations are w
 academic papers, presentations, schedules, blogposts and guides.
 Org-mode is one of the most complex things ever, lets make it a bit more usable with some basic configuration.
 
-
 Those are all rather self-explanatory.
 
 ** Common settings
 
 #+BEGIN_SRC emacs-lisp
-  (setq org-ellipsis " ")
-  (setq org-src-fontify-natively t)
-  (setq org-src-tab-acts-natively t)
-  (setq org-confirm-babel-evaluate nil)
-  (setq org-export-with-smart-quotes t)
-  (setq org-src-window-setup 'current-window)
+  ;; Turn on indentation and auto-fill mode for Org files
+  (defun dw/org-mode-setup ()
+    (org-indent-mode)
+    (variable-pitch-mode 1)
+    (auto-fill-mode 0)
+    (visual-line-mode 1)
+    (diminish org-indent-mode))
+
+  (use-package org
+    :defer t
+    :hook (org-mode . dw/org-mode-setup)
+    :config
+    (setq org-confirm-babel-evaluate nil
+	  org-ellipsis " ▾"
+	  org-export-with-smart-quotes t
+	  org-hide-emphasis-markers t
+	  org-hide-block-startup nil
+	  org-src-fontify-natively t
+	  org-src-tab-acts-natively t
+	  org-src-preserve-indentation nil
+	  org-src-window-setup 'current-window
+	  org-edit-src-content-indentation 2
+	  org-startup-folded 'content
+	  org-cycle-separator-lines 2)
+
+    (setq org-modules
+	  '(org-crypt
+	    org-habit
+	    org-bookmark
+	    org-eshell
+	    org-irc)))
+
+  (defun dw/org-mode-visual-fill ()
+    (setq visual-fill-column-width 130
+	  visual-fill-column-center-text t)
+    (visual-fill-column-mode 1))
+
+  (use-package visual-fill-column
+    :ensure t
+    :defer t
+    :hook (org-mode . dw/org-mode-visual-fill))
+  #+END_SRC
+
+** Font Settings
+#+BEGIN_SRC emacs-lisp
+  ;; Set faces for heading levels
+  (dolist (face '((org-level-1 . 1.4)
+		  (org-level-2 . 1.3)
+		  (org-level-3 . 1.2)
+		  (org-level-4 . 1.1)
+		  (org-level-5 . 1.1)
+		  (org-level-6 . 1.1)
+		  (org-level-7 . 1.1)
+		  (org-level-8 . 1.1)))
+    (set-face-attribute (car face) nil :font "Noto Sans" :weight 'regular :height (cdr face)))
+
+  ;; Make sure org-indent face is available
+  (require 'org-indent)
+
+  ;; Ensure that anything that should be fixed-pitch in Org files appears that way
+  (set-face-attribute 'org-default nil :inherit 'variable-pitch)
+  (set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
+  (set-face-attribute 'org-table nil  :inherit 'fixed-pitch :height 60)
+  (set-face-attribute 'org-formula nil  :inherit 'fixed-pitch)
+  (set-face-attribute 'org-code nil   :inherit '(shadow fixed-pitch))
+  (set-face-attribute 'org-indent nil :inherit '(org-hide fixed-pitch))
+  (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
+  (set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
+  (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
+  (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch)
+
 #+END_SRC
 
 ** Syntax highlighting for documents exported to HTML
@@ -1049,10 +1157,9 @@ Those are all rather self-explanatory.
 ** Org Bullets
 Makes it all look a bit nicer, I hate looking at asterisks.
 #+BEGIN_SRC emacs-lisp
-  (use-package org-bullets
-    :ensure t
-    :config
-      (add-hook 'org-mode-hook (lambda () (org-bullets-mode))))
+   (use-package org-bullets
+     :after org
+     :hook (org-mode . org-bullets-mode))
 #+END_SRC
 
 ** Easy-to-add emacs-lisp template
