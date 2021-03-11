@@ -100,29 +100,29 @@ To aktivate ligatures copy https://raw.githubusercontent.com/mickeynp/ligature.e
   (pcase system-type
     ((or 'windows-nt 'cygwin)
      (set-face-attribute 'default nil
-			 :font "JetBrains Mono"
-			 :weight 'light
-			 ;;:height
-			 ))
+                         :font "JetBrains Mono"
+                         :weight 'light
+                         ;;:height
+                         ))
     ((or 'gnu/linux 'darwin)
      (set-face-attribute 'default nil
-			 :font "Fira Code"
-			 :height 100
-			 )))
+                         :font "Fira Code"
+                         :height 100
+                         )))
 
     ;; Set the fixed pitch face
     (set-face-attribute 'fixed-pitch nil
-			:font "Fira Code"
-			:weight 'light
-			:height 100
-			)
+                        :font "Fira Code"
+                        :weight 'light
+                        :height 100
+                        )
 
     ;; Set the variable pitch face
     (set-face-attribute 'variable-pitch nil
-			:font "Noto Sans"
-			:weight 'light
-			:height 100
-			)
+                        :font "Noto Sans"
+                        :weight 'light
+                        :height 100
+                        )
     ;;  (set-face-attribute 'default nil :font "Fira Code" )
     (add-to-list 'load-path "~/.emacs.d/lisp/")
     ;; The ligatures are tuned for Fira Code!
@@ -130,24 +130,25 @@ To aktivate ligatures copy https://raw.githubusercontent.com/mickeynp/ligature.e
       :load-path "path-to-ligature-repo"
       :config
       ;; Enable the "www" ligature in every possible major mode
-	  (ligature-set-ligatures 't '("www"))
-	  ;; Enable traditional ligature support in eww-mode, if the
-	  ;; `variable-pitch' face supports it
-	  (ligature-set-ligatures 'eww-mode '("ff" "fi" "ffi"))
-	  ;; Enable all Cascadia Code ligatures in programming modes
-	  (ligature-set-ligatures '(prog-mode org-mode) '("**" "***" "**/" "*>" "*/" "\\\\" "\\\\\\" "{-" "::"
-							  ":::" ":=" "!!" "!=" "!==" "-}" "----" "-->" "->" "->>"
-							  "-<" "-<<" "-~" "#{" "#[" "##" "###" "####" "#(" "#?" "#_"
-							  "#_(" ".-" ".=" ".." "..<" "..." "?=" "??" ";;" "/*" "/**"
-							  "/=" "/==" "/>" "//" "///" "&&" "||" "||=" "|=" "|>" "^=" "$>"
-							  "++" "+++" "+>" "=:=" "==" "===" "==>" "=>" "=>>" "<="
-							  "=<<" "=/=" ">-" ">=" ">=>" ">>" ">>-" ">>=" ">>>" "<*"
-							  "<*>" "<|" "<|>" "<$" "<$>" "<!--" "<-" "<--" "<->" "<+"
-							  "<+>" "<=" "<==" "<=>" "<=<" "<>" "<<" "<<-" "<<=" "<<<"
-							  "<~" "<~~" "</" "</>" "~@" "~-" "~>" "~~" "~~>" "%%"))
-	  ;; Enables ligature checks globally in all buffers. You can also do it
-	  ;; per mode with `ligature-mode'.
-	  (global-ligature-mode t))
+          (ligature-set-ligatures 't '("www"))
+          ;; Enable traditional ligature support in eww-mode, if the
+          ;; `variable-pitch' face supports it
+          (ligature-set-ligatures 'eww-mode '("ff" "fi" "ffi"))
+          ;; Enable all Cascadia Code ligatures in programming modes
+          (ligature-set-ligatures '(prog-mode)
+                                  '("**" "***" "**/" "*>" "*/" "\\\\" "\\\\\\" "{-" "::"
+                                    ":::" ":=" "!!" "!=" "!==" "-}" "----" "-->" "->" "->>"
+                                    "-<" "-<<" "-~" "#{" "#[" "##" "###" "####" "#(" "#?" "#_"
+                                    "#_(" ".-" ".=" ".." "..<" "..." "?=" "??" ";;" "/*" "/**"
+                                    "/=" "/==" "/>" "//" "///" "&&" "||" "||=" "|=" "|>" "^=" "$>"
+                                    "++" "+++" "+>" "=:=" "==" "===" "==>" "=>" "=>>" "<="
+                                    "=<<" "=/=" ">-" ">=" ">=>" ">>" ">>-" ">>=" ">>>" "<*"
+                                    "<*>" "<|" "<|>" "<$" "<$>" "<!--" "<-" "<--" "<->" "<+"
+                                    "<+>" "<=" "<==" "<=>" "<=<" "<>" "<<" "<<-" "<<=" "<<<"
+                                    "<~" "<~~" "</" "</>" "~@" "~-" "~>" "~~" "~~>" "%%"))
+          ;; Enables ligature checks globally in all buffers. You can also do it
+          ;; per mode with `ligature-mode'.
+          (global-ligature-mode t))
 #+END_SRC
 *** Pretty symbols
 Changes =lambda= to an actual symbol and a few others as well, only in the GUI version though.
@@ -1066,7 +1067,7 @@ Those are all rather self-explanatory.
   ;; Turn on indentation and auto-fill mode for Org files
   (defun dw/org-mode-setup ()
     (org-indent-mode)
-    (variable-pitch-mode 1)
+    (variable-pitch-mode 0)
     (auto-fill-mode 0)
     (visual-line-mode 1)
     (diminish org-indent-mode))
@@ -1103,7 +1104,8 @@ Those are all rather self-explanatory.
   (use-package visual-fill-column
     :ensure t
     :defer t
-    :hook (org-mode . dw/org-mode-visual-fill))
+    :hook (org-mode . dw/org-mode-visual-fill)
+    )
   #+END_SRC
 
 ** Font Settings
@@ -1144,9 +1146,9 @@ Those are all rather self-explanatory.
 
 ** Line wrapping
 #+BEGIN_SRC emacs-lisp
-  (add-hook 'org-mode-hook
-	    '(lambda ()
-	       (visual-line-mode 1)))
+;;  (add-hook 'org-mode-hook
+;;	    '(lambda ()
+;;	       (visual-line-mode 1)))
 #+END_SRC
 
 ** Keybindings
